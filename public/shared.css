@@ -1,0 +1,40 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #17211b;
+  background: #f6f8f6;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select, textarea { font: inherit; }
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 13px;
+  cursor: pointer;
+  background: #166534;
+  color: white;
+  font-weight: 650;
+}
+button:hover { background: #14532d; }
+button:disabled { cursor: not-allowed; opacity: .5; }
+button.secondary { background: #e5ebe6; color: #24352a; }
+button.danger { background: #991b1b; }
+input, select, textarea {
+  width: 100%;
+  border: 1px solid #c8d2ca;
+  border-radius: 7px;
+  background: white;
+  color: #17211b;
+  padding: 8px 10px;
+}
+input:focus, select:focus, textarea:focus { outline: 2px solid #86b996; outline-offset: 1px; }
+label { display: grid; gap: 5px; font-size: 13px; font-weight: 600; }
+.muted { color: #607067; }
+.error { color: #991b1b; white-space: pre-wrap; }
+.success { color: #166534; }
+.card { background: white; border: 1px solid #dfe6e0; border-radius: 12px; box-shadow: 0 1px 2px rgb(0 0 0 / 4%); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LocalApply</title>
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="sidepanel.css">
+  </head>
+  <body>
+    <header>
+      <div>
+        <p class="eyebrow">LOCAL-ONLY AUTOFILL</p>
+        <h1>LocalApply</h1>
+      </div>
+      <button id="settings" class="secondary" aria-label="Open settings">Settings</button>
+    </header>
+    <main>
+      <section id="status" class="card status" aria-live="polite">
+        <strong>Ready to scan</strong>
+        <span class="muted">Open a job application, then scan this page.</span>
+      </section>
+      <section id="summary" class="summary" hidden></section>
+      <label id="resume-control" hidden>Resume for this fill<select id="resume-select"></select></label>
+      <div class="actions sticky-actions">
+        <button id="scan">Scan page</button>
+        <button id="fill" disabled>Fill ready fields</button>
+        <button id="undo" class="secondary" disabled>Undo</button>
+        <button id="pause" class="secondary" disabled>Pause site</button>
+      </div>
+      <section id="results" class="results" aria-live="polite"></section>
+    </main>
+    <footer>LocalApply never submits applications. Review every field before submitting.</footer>
+    <script type="module" src="sidepanel.js"></script>
+  </body>
+</html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LocalApply Settings</title>
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">LOCAL PROFILE</p>
+        <h1>LocalApply settings</h1>
+        <p>Everything here stays in this Chrome profile on this laptop.</p>
+      </div>
+      <div id="save-status" aria-live="polite"></div>
+    </header>
+    <main>
+      <form id="profile-form">
+        <section class="card section">
+          <div class="section-heading"><div><h2>Identity and contact</h2><p>Required values are marked.</p></div></div>
+          <div class="grid two">
+            <label>Legal first name *<input id="first-name" autocomplete="given-name" required></label>
+            <label>Last name *<input id="last-name" autocomplete="family-name" required></label>
+            <label>Preferred first name<input id="preferred-name"></label>
+            <label>Middle name<input id="middle-name" autocomplete="additional-name"></label>
+            <label>Email *<input id="email" type="email" autocomplete="email" required></label>
+            <label>Phone *<input id="phone" type="tel" autocomplete="tel" required></label>
+          </div>
+        </section>
+
+        <section class="card section">
+          <div class="section-heading"><div><h2>Address and links</h2><p>Leave values empty when you do not want them suggested.</p></div></div>
+          <div class="grid two">
+            <label class="wide">Address line 1<input id="address-line1" autocomplete="address-line1"></label>
+            <label class="wide">Address line 2<input id="address-line2" autocomplete="address-line2"></label>
+            <label>City<input id="city" autocomplete="address-level2"></label>
+            <label>State / province<input id="region" autocomplete="address-level1"></label>
+            <label>Postal code<input id="postal-code" autocomplete="postal-code"></label>
+            <label>Country<input id="country" autocomplete="country-name"></label>
+            <label>LinkedIn URL<input id="linkedin" type="url"></label>
+            <label>GitHub URL<input id="github" type="url"></label>
+            <label class="wide">Portfolio URL<input id="portfolio" type="url"></label>
+          </div>
+        </section>
+
+        <section class="card section">
+          <div class="section-heading"><div><h2>Experience and education</h2><p>Use JSON arrays. Dates preserve YYYY, YYYY-MM, or YYYY-MM-DD precision.</p></div></div>
+          <div class="grid two">
+            <label>Employment history
+              <textarea id="employment" rows="12" spellcheck="false" placeholder='[{"company":"Example","title":"Engineer","startDate":"2024-01"}]'></textarea>
+            </label>
+            <label>Education history
+              <textarea id="education" rows="12" spellcheck="false" placeholder='[{"school":"Example University","degree":"BS","endDate":"2024-05"}]'></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section class="card section">
+          <div class="section-heading"><div><h2>Saved exact answers</h2><p>Keys are exact question text. Answers are never generalized to sensitive fields.</p></div></div>
+          <div class="grid two">
+            <label>Authorized to work in the United States
+              <select id="us-authorized"><option value="">Not configured</option><option value="true">Yes</option><option value="false">No</option></select>
+            </label>
+            <label>Requires US visa sponsorship
+              <select id="us-sponsorship"><option value="">Not configured</option><option value="true">Yes</option><option value="false">No</option></select>
+            </label>
+            <label>Exact salary expectation<input id="salary" inputmode="decimal"></label>
+            <label>Available start date<input id="start-date" type="date"></label>
+          </div>
+          <label>Question-to-answer JSON
+            <textarea id="custom-answers" rows="8" spellcheck="false" placeholder='{"How did you hear about us?":"Company website"}'></textarea>
+          </label>
+        </section>
+
+        <section class="card section">
+          <div class="section-heading"><div><h2>Documents</h2><p>Resumes are copied into extension-scoped IndexedDB and selected explicitly.</p></div></div>
+          <div class="actions">
+            <label class="file-button">Import resume<input id="resume-file" class="sr-only" type="file" accept=".pdf,.doc,.docx,application/pdf"></label>
+          </div>
+          <div id="resume-list" class="list"></div>
+        </section>
+
+        <section class="card section">
+          <div class="section-heading"><div><h2>Safety policy</h2><p>Sensitive categories stay disabled unless explicitly enabled here.</p></div></div>
+          <div class="checks">
+            <label><input id="fast-mode" type="checkbox"> Fast mode: allow on-demand access on HTTP(S) job sites without requiring a fresh toolbar click</label>
+            <label><input id="overwrite" type="checkbox"> Overwrite non-empty fields</label>
+            <label><input id="allow-authorization" type="checkbox"> Allow exact work-authorization answers</label>
+            <label><input id="allow-compensation" type="checkbox"> Allow exact compensation answers</label>
+            <label><input id="allow-demographic" type="checkbox"> Allow exact demographic answers</label>
+          </div>
+        </section>
+
+        <section class="card section">
+          <div class="section-heading"><div><h2>Taught site mappings</h2><p>Rules saved through Teach This Page are narrow and inspectable.</p></div></div>
+          <div id="template-list" class="list"></div>
+        </section>
+
+        <section class="card section">
+          <div class="section-heading"><div><h2>Backup and deletion</h2><p>JSON exports do not include document bytes; keep resume originals separately.</p></div></div>
+          <div class="actions">
+            <button type="button" id="export" class="secondary">Export JSON</button>
+            <label class="file-button secondary">Import JSON<input id="import-file" class="sr-only" type="file" accept="application/json,.json"></label>
+            <button type="button" id="delete-all" class="danger">Delete all local data</button>
+          </div>
+        </section>
+
+        <div class="save-bar">
+          <button type="submit">Save profile</button>
+          <span class="muted">Changes are not used until saved.</span>
+        </div>
+      </form>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

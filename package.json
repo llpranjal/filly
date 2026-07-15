@@ -1,0 +1,27 @@
+{
+  "name": "localapply",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-only, precision-first Chrome job application autofill extension",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "npm run build && playwright test",
+    "test:privacy": "npm run build && node scripts/check-no-network.mjs",
+    "test:perf": "vitest run tests/performance",
+    "check": "npm run typecheck && npm test && npm run test:privacy && npm run test:e2e && npm run build"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "@types/chrome": "^0.0.326",
+    "@types/node": "^24.0.13",
+    "esbuild": "^0.25.6",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

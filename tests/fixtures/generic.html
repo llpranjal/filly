@@ -1,0 +1,29 @@
+<!doctype html><html><head><title>Generic application</title></head><body>
+<main><form id="application">
+  <label>First name <input name="first_name" autocomplete="given-name" required></label>
+  <label>Last name <input name="last_name" autocomplete="family-name" required></label>
+  <label>Email address <input name="email" type="email" autocomplete="email" required></label>
+  <label>Phone number <input name="phone" type="tel" autocomplete="tel"></label>
+  <label>LinkedIn URL <input name="linkedin"></label>
+  <input type="text" name="website_confirm" style="display:none" aria-hidden="true">
+  <fieldset><legend>Work experience</legend>
+    <label>Company name <input name="company_1"></label>
+    <label>Job title <input name="title_1"></label>
+    <label>Start date <input name="start_1" type="month"></label>
+  </fieldset>
+  <fieldset><legend>Work experience</legend>
+    <label>Company name <input name="company_2"></label>
+    <label>Job title <input name="title_2"></label>
+    <label>Start date <input name="start_2" type="month"></label>
+  </fieldset>
+  <fieldset><legend>Education</legend>
+    <label>School name <input name="school"></label>
+    <label>Degree <select name="degree"><option value="">Choose</option><option>BS</option><option>MS</option></select></label>
+  </fieldset>
+  <label>Are you authorized to work in the United States?
+    <select name="authorized"><option value="">Choose</option><option value="yes">Yes</option><option value="no">No</option></select>
+  </label>
+  <label>Gender <select name="gender"><option>Prefer not to answer</option></select></label>
+  <label>Resume <input type="file" name="resume" accept="application/pdf"></label>
+  <button type="submit">Submit application</button>
+</form></main></body></html>
