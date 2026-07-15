@@ -27,6 +27,7 @@ export type SemanticType =
   | "links.linkedin"
   | "links.github"
   | "links.portfolio"
+  | "skills"
   | `employment.${number}.${"company" | "title" | "location" | "start_date" | "end_date" | "description"}`
   | `education.${number}.${"school" | "degree" | "field" | "start_date" | "end_date"}`
   | "authorization.us_authorized"
@@ -120,6 +121,7 @@ export interface ApplicantProfile {
   };
   employment: EmploymentRecord[];
   education: EducationRecord[];
+  skills: string[];
   authorization: {
     usAuthorized?: boolean;
     requiresSponsorship?: boolean;

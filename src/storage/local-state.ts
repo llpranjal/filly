@@ -17,6 +17,12 @@ export async function loadState(): Promise<LocalState> {
 
 export async function saveState(state: LocalState): Promise<void> {
   const validation = validateState(state);
+  if (!validation.value) throw new Error(validation.errors.join("\n"));
+  await chrome.storage.local.set({ [STORAGE_KEY]: validation.value });
+}
+
+export async function saveValidatedState(state: LocalState): Promise<void> {
+  const validation = validateState(state);
   if (!validation.success || !validation.value) throw new Error(validation.errors.join("\n"));
   await chrome.storage.local.set({ [STORAGE_KEY]: validation.value });
 }

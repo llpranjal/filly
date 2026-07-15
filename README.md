@@ -8,9 +8,10 @@ It is an independent clean-room project. It is not affiliated with Simplify, doe
 
 - Manifest V3 extension loaded unpacked in Chrome.
 - User-triggered toolbar/keyboard operation with `activeTab`.
-- Optional explicit “fast mode” host permission; it still injects only on demand.
+- Required HTTP(S) host permission so application pages can always be scanned after installation; scripts are still injected only on demand.
 - Local profile editing and validated JSON import/export.
-- Imported PDF/DOC/DOCX resume bytes in extension-scoped IndexedDB.
+- Fully local PDF, DOCX, and TXT resume parsing for name, email, phone, links, dated employment, education, and skills.
+- Imported resume bytes in extension-scoped IndexedDB; parsed values merge only into empty profile fields.
 - Generic HTML plus Greenhouse, Lever, Ashby, and Workday detection/root adapters.
 - Accessible labels, sections, native controls, radio groups, open shadow roots, and accessible frames.
 - Deterministic matching with evidence and calibrated Ready/Review/Blocked/Missing states.
@@ -38,8 +39,8 @@ Then:
 3. Choose **Load unpacked**.
 4. Select this repository’s `dist` directory.
 5. Pin LocalApply if desired.
-6. Open **Extension options** and save the required name, email, and phone fields.
-7. Import a resume and make it the default.
+6. Open **Extension options** and choose **Import and parse resume**.
+7. Review the locally extracted profile fields, correct anything needed, and save. The first imported resume becomes the default.
 
 After source changes, run `npm run build` and press **Reload** on the extension card. `npm run dev` watches TypeScript bundles, but Chrome still needs the extension reload when the service worker or manifest changes.
 
@@ -61,9 +62,11 @@ LocalApply preserves non-empty values by default. Work authorization, compensati
 - `scripting`: on-demand page-agent injection.
 - `storage`: profile, policy, templates, and short-lived tab sessions.
 - `sidePanel`: adjacent review interface.
-- Optional HTTP(S) host access: only if the user enables Fast mode in Settings.
+- HTTP(S) host access: required because job applications can be hosted on arbitrary employer and ATS origins. No static content script runs on those pages.
 
 Structured data uses `chrome.storage.local`; imported resume bytes use extension-scoped IndexedDB. JSON export includes profile/settings/document metadata but intentionally excludes resume bytes. The **Delete all local data** action clears local/session storage and resume IndexedDB.
+
+Resume parsing is lazy-loaded only in Settings. PDF.js handles text PDFs and Mammoth handles DOCX entirely from uploaded bytes. The extension manifest keeps `connect-src 'none'`, and the browser suite asserts that parsing a real PDF produces no HTTP(S) requests. Scanned image-only PDFs require OCR and currently remain available for upload but cannot populate profile fields automatically.
 
 ## Development commands
 
@@ -99,11 +102,12 @@ The authoritative design is [docs/LOCAL_JOB_AUTOFILL_DESIGN.md](docs/LOCAL_JOB_A
 ## Known limitations
 
 - ATS adapters are fixture-backed but have not been certified against every live tenant/version. Workday and custom React controls vary substantially.
+- Resume parsing is conservative and layout-dependent. Review extracted experience and education before applying; image-only PDFs are not OCRed, and legacy `.doc` must be saved as PDF or DOCX.
 - Repeatable sections already present in the DOM are supported; automatically clicking “Add another experience/education” is not yet implemented.
 - Closed shadow roots and browser-restricted cross-origin frames cannot be inspected.
 - ARIA combobox execution requires an exact visible option. Unsupported widgets are left for manual completion.
 - A file upload can be reconstructed locally, but a site may reject programmatic file assignment and require manual selection.
-- DevTools-generated keyboard events cannot dispatch Chrome toolbar/extension-command gestures. The suite verifies that the reserved `_execute_action` shortcut is registered, then grants only the local fixture origin in a copied test manifest and reproduces the action’s active-tab bookkeeping for the end-to-end workflow. A physical toolbar click/shortcut remains a final smoke check after loading `dist` in regular Chrome.
+- DevTools-generated keyboard events cannot dispatch Chrome toolbar/extension-command gestures. The suite verifies that the reserved `_execute_action` shortcut is registered and uses the unmodified production manifest for scanning, then reproduces the action’s active-tab bookkeeping for the end-to-end workflow. A physical toolbar click/shortcut remains a final smoke check after loading `dist` in regular Chrome.
 - Local-only storage relies on the operating-system account/full-disk encryption; the extension does not add separate at-rest encryption.
 
 These limitations are fail-safe: unsupported or uncertain controls are skipped rather than guessed.

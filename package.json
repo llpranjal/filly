@@ -1,6 +1,6 @@
 {
   "name": "localapply",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Local-only, precision-first Chrome job application autofill extension",
@@ -21,7 +21,13 @@
     "@types/node": "^24.0.13",
     "esbuild": "^0.25.6",
     "jsdom": "^26.1.0",
+    "jszip": "^3.10.1",
+    "pdf-lib": "^1.17.1",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "mammoth": "^1.12.0",
+    "pdfjs-dist": "^6.1.200"
   }
 }

@@ -1,6 +1,6 @@
 import type { ApplicantProfile, LocalState, ResumeMetadata } from "../domain/types";
 import { DEFAULT_STATE, validateState } from "../profile/schema";
-import { loadState, saveState } from "../storage/local-state";
+import { loadState, saveState, saveValidatedState } from "../storage/local-state";
 import { clearResumeStore, deleteResume, digestFile, putResume } from "../storage/resume-store";
 
 const form = document.querySelector<HTMLFormElement>("#profile-form")!;
@@ -46,6 +46,7 @@ function profileFromForm(): ApplicantProfile {
     links,
     employment: JSON.parse(textarea("employment").value || "[]") as ApplicantProfile["employment"],
     education: JSON.parse(textarea("education").value || "[]") as ApplicantProfile["education"],
+    skills: input("skills").value.split(",").map((value) => value.trim()).filter(Boolean),
     authorization: {},
     application: {},
     customAnswers: JSON.parse(textarea("custom-answers").value || "{}") as ApplicantProfile["customAnswers"]
@@ -79,6 +80,7 @@ function populateForm(): void {
   input("portfolio").value = profile.links.portfolio ?? "";
   textarea("employment").value = JSON.stringify(profile.employment, null, 2);
   textarea("education").value = JSON.stringify(profile.education, null, 2);
+  input("skills").value = profile.skills.join(", ");
   textarea("custom-answers").value = JSON.stringify(profile.customAnswers, null, 2);
   input("us-authorized").value = profile.authorization.usAuthorized === undefined ? "" : String(profile.authorization.usAuthorized);
   input("us-sponsorship").value = profile.authorization.requiresSponsorship === undefined ? "" : String(profile.authorization.requiresSponsorship);
@@ -88,7 +90,6 @@ function populateForm(): void {
   input("allow-authorization").checked = state.preferences.allowSensitive.work_authorization === true;
   input("allow-compensation").checked = state.preferences.allowSensitive.compensation === true;
   input("allow-demographic").checked = state.preferences.allowSensitive.demographic === true;
-  void chrome.permissions.contains({ origins: ["http://*/*", "https://*/*"] }).then((enabled) => { input("fast-mode").checked = enabled; });
   renderResumes();
   renderTemplates();
 }
@@ -178,7 +179,7 @@ form.addEventListener("submit", (event) => {
       compensation: input("allow-compensation").checked,
       demographic: input("allow-demographic").checked
     };
-    void saveState(state).then(() => setStatus("Profile saved locally.", "success"), (error: unknown) => setStatus(error instanceof Error ? error.message : "Save failed", "error"));
+    void saveValidatedState(state).then(() => setStatus("Profile saved locally.", "success"), (error: unknown) => setStatus(error instanceof Error ? error.message : "Save failed", "error"));
   } catch (error) {
     setStatus(error instanceof Error ? error.message : "Invalid JSON", "error");
   }
@@ -189,6 +190,8 @@ input("resume-file").addEventListener("change", () => {
   if (!file) return;
   void (async () => {
     if (file.size > 8 * 1024 * 1024) throw new Error("Resume is larger than the 8 MB local limit");
+    setStatus("Importing and parsing the resume locally…");
+    const bytes = await file.arrayBuffer();
     const metadata: ResumeMetadata = {
       id: crypto.randomUUID(),
       name: file.name.replace(/\.[^.]+$/, ""),
@@ -198,23 +201,26 @@ input("resume-file").addEventListener("change", () => {
       sha256: await digestFile(file),
       createdAt: Date.now()
     };
-    await putResume(metadata, await file.arrayBuffer());
+    await putResume(metadata, bytes);
     state.resumes = [...state.resumes, metadata];
     state.profile.defaultResumeId ??= metadata.id;
-    await saveState(state);
-    renderResumes();
-    setStatus("Resume imported locally.", "success");
+    try {
+      const { parseResumeFile } = await import("../resume/extract");
+      const { mergeParsedResume } = await import("../resume/parse-text");
+      const parsed = await parseResumeFile(file, bytes);
+      const merged = mergeParsedResume(state.profile, parsed);
+      state.profile = merged.profile;
+      await saveState(state);
+      populateForm();
+      const warning = parsed.warnings.length ? ` ${parsed.warnings.slice(0, 2).join(" ")}` : "";
+      setStatus(`Resume imported. ${merged.appliedFields.length} profile sections were filled automatically.${warning}`, "success");
+    } catch (parseError) {
+      await saveState(state);
+      renderResumes();
+      setStatus(`Resume stored, but automatic parsing could not finish: ${parseError instanceof Error ? parseError.message : "Unknown parser error"}`, "error");
+    }
     input("resume-file").value = "";
   })().catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Resume import failed", "error"));
-});
-
-input("fast-mode").addEventListener("change", () => {
-  const enabled = input("fast-mode").checked;
-  const permission = { origins: ["http://*/*", "https://*/*"] };
-  void (enabled ? chrome.permissions.request(permission) : chrome.permissions.remove(permission)).then((changed) => {
-    input("fast-mode").checked = enabled ? changed : !changed;
-    setStatus(enabled && changed ? "Fast mode site access enabled." : !enabled && changed ? "Fast mode site access removed." : "Chrome did not change site access.", changed ? "success" : "normal");
-  });
 });
 
 document.querySelector("#export")!.addEventListener("click", () => {

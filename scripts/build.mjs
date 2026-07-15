@@ -9,14 +9,9 @@ const outdir = path.join(root, "dist");
 await rm(outdir, { recursive: true, force: true });
 await mkdir(outdir, { recursive: true });
 await cp(path.join(root, "public"), outdir, { recursive: true });
+await cp(path.join(root, "node_modules/pdfjs-dist/build/pdf.worker.min.mjs"), path.join(outdir, "pdf.worker.min.mjs"));
 
-const options = {
-  entryPoints: {
-    "service-worker": "src/background/service-worker.ts",
-    "page-agent": "src/content/page-agent.ts",
-    sidepanel: "src/ui/sidepanel.ts",
-    options: "src/ui/options.ts"
-  },
+const sharedOptions = {
   outdir,
   bundle: true,
   format: "esm",
@@ -28,10 +23,28 @@ const options = {
   logLevel: "info"
 };
 
+const coreOptions = {
+  ...sharedOptions,
+  entryPoints: {
+    "service-worker": "src/background/service-worker.ts",
+    "page-agent": "src/content/page-agent.ts",
+    sidepanel: "src/ui/sidepanel.ts"
+  },
+  splitting: false
+};
+
+const optionsPageOptions = {
+  ...sharedOptions,
+  entryPoints: { options: "src/ui/options.ts" },
+  splitting: true,
+  chunkNames: "chunks/[name]-[hash]"
+};
+
 if (watch) {
-  const ctx = await context(options);
-  await ctx.watch();
+  const coreContext = await context(coreOptions);
+  const optionsContext = await context(optionsPageOptions);
+  await Promise.all([coreContext.watch(), optionsContext.watch()]);
   console.log("Watching LocalApply sources…");
 } else {
-  await build(options);
+  await Promise.all([build(coreOptions), build(optionsPageOptions)]);
 }

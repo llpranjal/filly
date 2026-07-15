@@ -35,6 +35,7 @@ const RULES: Rule[] = [
   { semanticType: "links.linkedin", aliases: ["linkedin", "linkedin url", "linkedin profile"] },
   { semanticType: "links.github", aliases: ["github", "github url", "github profile"] },
   { semanticType: "links.portfolio", aliases: ["portfolio", "portfolio url", "personal website", "website"] },
+  { semanticType: "skills", aliases: ["skills", "technical skills", "relevant skills", "core competencies"] },
   { semanticType: "employment.0.company", aliases: ["company", "company name", "employer"], requiresSection: /employment|work experience|experience/ },
   { semanticType: "employment.0.title", aliases: ["job title", "position", "title"], requiresSection: /employment|work experience|experience/ },
   { semanticType: "employment.0.location", aliases: ["location", "job location"], requiresSection: /employment|work experience|experience/ },
@@ -92,6 +93,7 @@ export function getProfileValue(profile: ApplicantProfile, semanticType: Semanti
     case "links.linkedin": return profile.links.linkedin;
     case "links.github": return profile.links.github;
     case "links.portfolio": return profile.links.portfolio;
+    case "skills": return profile.skills.length ? profile.skills.join(", ") : undefined;
     case "authorization.us_authorized": return profile.authorization.usAuthorized;
     case "authorization.us_sponsorship": return profile.authorization.requiresSponsorship;
     case "application.salary": return profile.application.salary;

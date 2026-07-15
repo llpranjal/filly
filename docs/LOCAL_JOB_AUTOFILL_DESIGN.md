@@ -203,10 +203,10 @@ Use Manifest V3 with:
 - `scripting` for adapter/bridge injection when needed.
 - `sidePanel` for the review interface.
 - `activeTab` for explicit one-tab access.
-- Optional ATS host permissions only if a later opt-in always-ready mode is implemented.
+- Required `http://*/*` and `https://*/*` host permissions so arbitrary employer and ATS origins can be scanned reliably.
 - `nativeMessaging` only in a build that enables the optional companion.
 
-Version 1 uses `activeTab` plus `chrome.scripting.executeScript()` after an explicit toolbar or keyboard gesture. It has no static all-site content script and no idle page observer. A later personal “always-ready mode” may use optional narrowly scoped ATS host access, but it must be explicit. The extension should not request `tabs`, web request interception, cookies, history, or broad network permissions unless a demonstrated requirement appears.
+Version 1 uses required HTTP(S) host access because application origins cannot be predicted and `activeTab` alone is unreliable when the side panel initiates a later scan. It still uses `chrome.scripting.executeScript()` on demand, has no static all-site content script, and leaves no idle page observer. The extension must not request cookies, history, web-request interception, or unrelated page access. The denylist and per-origin Pause control remain mandatory because the declared host scope is broad.
 
 Manifest V3 packages their executable code locally and use an event-driven service worker. Chrome content scripts normally run in an isolated JavaScript world, which is desirable for safety. A narrowly scoped main-world bridge may be injected only for framework-controlled inputs that do not respond correctly from the isolated world.
 
@@ -354,6 +354,8 @@ type ApplicantProfile = {
 ```
 
 Dates must preserve the user’s actual precision. For example, a month/year record must not be silently converted into an invented day. Phone numbers should store a normalized form plus preferred display format. All URLs, country names, state/province codes, degree types, and employment types should have normalized canonical forms with display values.
+
+Profile setup may begin by importing a PDF, DOCX, or plain-text resume. Parsing is fully local and lazy-loaded in the Options page. Extracted identity, contact, links, dated employment, dated education, and skills merge only into empty fields and are immediately persisted for autofill; explicit existing values always win. Parsing warnings remain visible and the user reviews the normalized profile before relying on it. Image-only PDFs are stored for upload but require a future local OCR component before they can populate the profile.
 
 ### 7.6 Matching pipeline
 
@@ -920,7 +922,7 @@ Recommended baseline: TypeScript with strict mode, a minimal UI framework or pla
 The following defaults are recommended and can be changed without redesigning the system:
 
 1. **Chrome minimum:** Chrome 116+, allowing a mature MV3 side-panel workflow.
-2. **Site access:** explicit all-site “fast mode” for this one local installation, with denylist and pause controls.
+2. **Site access:** required HTTP(S) host permission for this one local installation, with on-demand injection, a denylist, and pause controls.
 3. **Initial platforms:** Greenhouse, Lever, Ashby, generic HTML; Workday as the next dedicated phase.
 4. **Autofill trigger:** user action, not silent automatic filling.
 5. **Overwrite behavior:** never overwrite non-empty values by default.

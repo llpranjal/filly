@@ -13,6 +13,7 @@ export const EMPTY_PROFILE: ApplicantProfile = {
   links: {},
   employment: [],
   education: [],
+  skills: [],
   authorization: {},
   application: {},
   customAnswers: {}
@@ -138,6 +139,9 @@ export function validateProfile(input: unknown): ValidationResult<ApplicantProfi
     links: {},
     employment: parseEmployment(input.employment ?? [], errors),
     education: parseEducation(input.education ?? [], errors),
+    skills: Array.isArray(input.skills)
+      ? input.skills.filter((value): value is string => typeof value === "string").map((value) => value.trim()).filter(Boolean)
+      : [],
     authorization: {},
     application: {},
     customAnswers: {}

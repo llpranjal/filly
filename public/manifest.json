@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
   "name": "LocalApply",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Local-only, precision-first job application autofill.",
   "minimum_chrome_version": "116",
   "permissions": ["activeTab", "scripting", "storage", "sidePanel"],
-  "optional_host_permissions": ["http://*/*", "https://*/*"],
+  "host_permissions": ["http://*/*", "https://*/*"],
   "background": {
     "service_worker": "service-worker.js",
     "type": "module"

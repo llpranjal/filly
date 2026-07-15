@@ -17,6 +17,7 @@ export function testState(): LocalState {
         { company: "Difference Labs", title: "Researcher", startDate: "2021-02", endDate: "2022-12" }
       ],
       education: [{ school: "Example University", degree: "BS", field: "Mathematics", endDate: "2021-05" }],
+      skills: ["TypeScript", "SQL"],
       authorization: { usAuthorized: true, requiresSponsorship: false },
       application: { salary: "150000", startDate: "2026-08-01" },
       customAnswers: { "How did you hear about us?": "Company website" },
